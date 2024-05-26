@@ -10,9 +10,11 @@ from llama_cpp import llama_model_quantize_params
 from argparse import Namespace
 import subprocess
 
-# Import the main function from the convert module
-sys.path.append(os.path.join(os.getcwd(), "llama.cpp"))
-from convert import main
+# # Import the main function from the convert module
+# sys.path.append(os.path.join(os.getcwd(), "llama.cpp"))
+# from convert import main
+
+uploaded_file = None
 
 DEFAULT_CONCURRENCY = 2
 script_path = "llama.cpp/convert-hf-to-gguf.py"
@@ -63,10 +65,10 @@ def streamlit_main():
         else ["f32", "f16"]
     )
     # Create a file uploader widget
-    uploaded_file = st.file_uploader("Select Directory")
+    # uploaded_file = st.file_uploader("Select Directory")
 
     # Create a text input widget for manual entry
-    manual_entry = st.text_input("Or Enter Directory Path Manually")
+    manual_entry = st.text_input("Enter Directory Path Manually")
     outtype = "0"
     # outfile = ""
     # Use the selected directory or the manually entered directory

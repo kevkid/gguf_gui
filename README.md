@@ -7,4 +7,6 @@ bash run.sh
 This should pull the repos and install the requirements.
 You can do this with CUDA as well
 
+
+
 ![alt text](main.png "Main")
