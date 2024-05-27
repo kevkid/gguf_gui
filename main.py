@@ -57,7 +57,8 @@ ggml_type_enum_invert = {v: k for k, v in ggml_type_enum.items()}
 
 
 def streamlit_main():
-    st.title("Model Conversion from Safetensor to GGUF")
+    st.title("GGUF_GUI")
+    st.header("Step 1: Convert Safetensor to GGUF")
     output_choices = (
         ["f32", "f16", "bf16", "q8_0", "auto"]
         if np.uint32(1) == np.uint32(1).newbyteorder("<")
@@ -67,7 +68,7 @@ def streamlit_main():
     # uploaded_file = st.file_uploader("Select Directory")
 
     # Create a text input widget for manual entry
-    manual_entry = st.text_input("Enter Directory Path or repo")
+    manual_entry = st.text_input("Enter Directory Path or repo", placeholder="/path/to/safetensors/ or username_or_org/repo_name")
     outtype = "0"
     outfile = ""
     # Use the selected directory or the manually entered directory
@@ -135,11 +136,11 @@ def streamlit_main():
         except Exception as e:
             st.error(f"An error occurred: {e}")
     # Display header
-    st.header("Quantize FP32/16 GGUF")
+    st.header("Step 2: Quantize FP32/16 GGUF")
     # Create a dropdown selector
     ggml_selected_type = st.selectbox("Select a GGML Type", list(ggml_type_enum.keys()))
     # Create a text input for the outfile
-    outfile_ggml = st.text_input("Enter Output File Name", st.session_state.get('outfile'))
+    outfile_ggml = st.text_input("Enter file path to your GGUF", st.session_state.get('outfile'), placeholder="/path/to/model.gguf")
 
     # Check if the "Quantize" button is clicked
     if st.button("Quantize"):
