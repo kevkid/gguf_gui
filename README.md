@@ -4,12 +4,12 @@ Easy installation:
 ```
 bash run.sh
 ```
+This should pull the repos and install the requirements.
+
 After the initial run you can just run:
 ```
 streamlit run main.py
 ```
-
-This should pull the repos and install the requirements.
 You can do this with CUDA as well
 
 To use the huggingface downloader you have to enter in the repo id:
