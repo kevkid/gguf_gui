@@ -21,4 +21,5 @@ pip install -r "llama.cpp/requirements/requirements-convert-hf-to-gguf.txt"
 # CMAKE_ARGS="-DLLAMA_CUDA=on" pip install llama-cpp-python
 pip install llama-cpp-python
 pip install streamlit
+pip install --upgrade huggingface_hub
 streamlit run main.py

@@ -9,7 +9,7 @@ import llama_cpp
 from llama_cpp import llama_model_quantize_params
 from argparse import Namespace
 import subprocess
-
+from huggingface_hub import snapshot_download
 # # Import the main function from the convert module
 # sys.path.append(os.path.join(os.getcwd(), "llama.cpp"))
 # from convert import main
@@ -58,7 +58,6 @@ ggml_type_enum_invert = {v: k for k, v in ggml_type_enum.items()}
 
 def streamlit_main():
     st.title("Model Conversion from Safetensor to GGUF")
-
     output_choices = (
         ["f32", "f16", "bf16", "q8_0", "auto"]
         if np.uint32(1) == np.uint32(1).newbyteorder("<")
@@ -68,9 +67,9 @@ def streamlit_main():
     # uploaded_file = st.file_uploader("Select Directory")
 
     # Create a text input widget for manual entry
-    manual_entry = st.text_input("Enter Directory Path Manually")
+    manual_entry = st.text_input("Enter Directory Path or repo")
     outtype = "0"
-    # outfile = ""
+    outfile = ""
     # Use the selected directory or the manually entered directory
     if uploaded_file is not None:
         file_directory = os.path.dirname(uploaded_file.name)
@@ -102,12 +101,20 @@ def streamlit_main():
         try:
             with st.spinner(f"Converting Safetensors to {outtype}"):
                 # Define the arguments you want to pass
-                # For example:
+                try:
+                    result = snapshot_download(repo_id=manual_entry, local_files_only=False)
+                    st.success(result)
+                    file_directory = os.getcwd()
+                    file_name = os.path.basename(manual_entry)
+                    model = result #'/'.join(result.split('/')[:-2])  # Drop the last 2 elements snapshots/XXXX
+                except Exception as e:
+                    print(e)
                 outfile = f"{file_directory}/{file_name}_{outtype}.gguf"
                 if vocab_only:
                     outfile = outfile.replace(".gguf", "_vocab_only.gguf")
                 if big_endian:
                     outfile = outfile.replace(".gguf", "_big_endian.gguf")
+                st.session_state['outfile'] = outfile
                 st.success(f"Writing file to: {outfile}")
                 args = [
                     "--outfile",
@@ -132,19 +139,19 @@ def streamlit_main():
     # Create a dropdown selector
     ggml_selected_type = st.selectbox("Select a GGML Type", list(ggml_type_enum.keys()))
     # Create a text input for the outfile
-    outfile = st.text_input("Enter Output File Name", "")
+    outfile_ggml = st.text_input("Enter Output File Name", st.session_state.get('outfile'))
 
     # Check if the "Quantize" button is clicked
     if st.button("Quantize"):
         # Check if outfile is provided
-        if outfile:
+        if outfile_ggml:
             with st.spinner(f"Converting Safetensors to {ggml_selected_type}"):
                 # Perform quantization
                 output_fpath = (
-                    f'{outfile.replace(".gguf", f"_{ggml_selected_type}")}.gguf'
+                    f'{outfile_ggml.replace(".gguf", f"_{ggml_selected_type}")}.gguf'
                 )
                 result = llama_cpp.llama_model_quantize(
-                    outfile.encode("utf-8"),
+                    outfile_ggml.encode("utf-8"),
                     output_fpath.encode("utf-8"),
                     llama_model_quantize_params(
                         0, ggml_type_enum[ggml_selected_type], True, True, False
