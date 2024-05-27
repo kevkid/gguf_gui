@@ -7,6 +7,8 @@ bash run.sh
 This should pull the repos and install the requirements.
 You can do this with CUDA as well
 
+To use the huggingface downloader you have to enter in the repo id:
+for example: `username_or_org/repo_name` or `lysandre/test-model`.
 
 
 ![alt text](main.png "Main")
