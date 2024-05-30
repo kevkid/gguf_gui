@@ -18,8 +18,10 @@ fi
 
 
 pip install -r "llama.cpp/requirements/requirements-convert-hf-to-gguf.txt"
-# CMAKE_ARGS="-DLLAMA_CUDA=on" pip install llama-cpp-python
-pip install llama-cpp-python
+cd llama.cpp
+# you can add in your build options here
+make -j 2
+cd ..
 pip install streamlit
 pip install --upgrade huggingface_hub
 streamlit run main.py

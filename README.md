@@ -5,6 +5,7 @@ Easy installation:
 bash run.sh
 ```
 This should pull the repos and install the requirements.
+You will need llama.cpp build using make or cmake. The script above will try to do that.
 
 After the initial run you can just run:
 ```
