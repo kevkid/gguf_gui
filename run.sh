@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 # Repository name
 REPO_NAME="llama.cpp"
+DOCKER_BUILD=${DOCKER_BUILD:-false} # set to true if running during a docker build
 
 # Function to check if a directory is a git repository
 is_git_repo() {
@@ -31,4 +31,7 @@ fi
 make -j "$(nproc)"
 cd ..
 
-streamlit run main.py
+if [ "$DOCKER_BUILD" != true ]; then
+  echo "Starting Streamlit..."
+  streamlit run main.py
+fi

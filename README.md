@@ -1,4 +1,4 @@
-### GGUF_GUI: An easy way to convert your safetensors to GGUF
+# GGUF_GUI: An easy way to convert your safetensors to GGUF
 
 Easy installation:
 
@@ -21,3 +21,13 @@ To use the huggingface downloader you have to enter in the repo id:
 for example: `username_or_org/repo_name` or `lysandre/test-model`.
 
 ![alt text](main.png "Main")
+
+## Docker
+
+You can also build the apps as a container image:
+
+```shell
+cp Dockerfile.cpu Dockerfile # or Dockerfile.cuda
+docker build -t gguf_gui .
+docker run -v /path/to/your/models:/app/models -p 8501:8501 gguf_gui
+```
