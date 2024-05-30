@@ -33,5 +33,5 @@ cd ..
 
 if [ "$DOCKER_BUILD" != true ]; then
   echo "Starting Streamlit..."
-  streamlit run main.py
+  streamlit run main.py --browser.serverAddress 0.0.0.0
 fi

@@ -15,9 +15,13 @@ from pathlib import Path
 # sys.path.append(os.path.join(os.getcwd(), "llama.cpp"))
 # from convert import main
 
+# set the python path to include the llama.cpp directory
+sys.path.append(os.path.join(os.getcwd(), "llama.cpp"))
+
 uploaded_file = None
 
-DEFAULT_CONCURRENCY = 2
+DEFAULT_CONCURRENCY = int(os.getenv("DEFAULT_CONCURRENCY", 2))
+
 script_path = "llama.cpp/convert-hf-to-gguf.py"
 # Define the enum
 ggml_type_enum = {
@@ -100,8 +104,7 @@ def streamlit_main():
                     outfile = outfile.replace(".gguf", "_big_endian.gguf")
                 st_to_gguf_output = f"{root_output_path.joinpath(manual_entry.name)}.gguf" or outfile
                 st.session_state['st_to_gguf_outfile'] = st_to_gguf_output
-                
-                
+
                 args = [
                     "--outfile",
                     st_to_gguf_output,
@@ -159,16 +162,10 @@ def streamlit_main():
             verbosity_level = st.selectbox("Verbosity Level (--verbosity)", [None, "0", "1", "2", "3"], index=0)
             num_chunks = st.number_input("Number of Chunks (-ofreq)", min_value=1, step=1)
             ow_option = st.selectbox("Overwrite Option (-ow)", [None, "0", "1"], index=0)
-            
+
             # Add any other common params here
             other_params = st.text_area("Other Parameters", "", placeholder="--arg value --arg2 value2")
 
-    
-    
-
-
-
-    
     # Check if the "Quantize" button is clicked
     if st.button("Quantize"):
         # Check if outfile is provided
@@ -196,11 +193,10 @@ def streamlit_main():
                     # st.text_area("Command Output", result.stdout)
                     # st.text_area("Command Errors", result.stderr)
 
-                
                 # Construct the command
                 cmd = ["./llama.cpp/quantize"]
                 if imatrix:
-                        cmd.extend(["--imatrix", imatrix_output_file or imatrix_file])
+                    cmd.extend(["--imatrix", imatrix_output_file or imatrix_file])
                 if allow_requantize:
                     cmd.append("--allow-requantize")
                 if leave_output_tensor:
@@ -221,7 +217,7 @@ def streamlit_main():
                             cmd.extend(["--override-kv", kv.strip()])
                 infile_ggml = (outfile_ggml or st.session_state.get('st_to_gguf_outfile'))
                 outfile_ggml = infile_ggml.replace(".gguf", f"_{ggml_selected_type}.gguf")
-                
+
                 if infile_ggml:
                     cmd.append(infile_ggml)
                 if outfile_ggml:
@@ -237,7 +233,6 @@ def streamlit_main():
                 # st.text_area("Command Output", result)
                 # st.text_area("Command Errors", result.stderr)
 
-                
                 # ######
                 st.success(f"""Quantizaion completed successfully!""")
                 st.success(f"""Output quantized model to: {outfile_ggml}""")
