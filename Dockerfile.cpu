@@ -1,0 +1,56 @@
+ARG ARG_BUILD_FROM="ubuntu:22.04"
+ARG DEBIAN_FRONTEND=noninteractive
+FROM $ARG_BUILD_FROM as base
+
+ARG ARG_USERNAME="app"
+ARG ARG_USER_UID=1337
+ARG ARG_USER_GID=$ARG_USER_UID
+ENV USERNAME $ARG_USERNAME
+ENV USER_UID $ARG_USER_UID
+ENV USER_GID $ARG_USER_GID
+ENV HOME /app
+ENV PATH=/app:/app/llama.cpp:$PATH
+
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends python3 python3-dev python3-pip python3-venv git \
+  build-essential cmake git gcc curl openssl libssl-dev liblzma-dev libffi-dev libsqlite3-dev
+
+RUN \
+  mkdir -p $HOME && \
+  groupadd --gid $USER_GID $USERNAME && \
+  adduser --uid $USER_UID --gid $USER_GID $USERNAME --no-create-home --home $HOME --disabled-password --gecos "" && \
+  chown -R $USERNAME:$USERNAME /app
+
+USER $USERNAME
+
+RUN git clone --depth=1 https://github.com/kevkid/gguf_gui.git /app
+RUN git clone --depth=1 https://github.com/ggerganov/llama.cpp.git /app/llama.cpp
+
+WORKDIR /app
+
+RUN curl https://pyenv.run | bash && \
+  export PYENV_ROOT="$HOME/.pyenv" && \
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH" && \
+  eval "$(pyenv init -)" && \
+  . ~/.bashrc && pyenv install 3.11 && pyenv global 3.11 && \
+  python -m venv .venv
+
+RUN . .venv/bin/activate && \
+  pip install --upgrade huggingface_hub pip streamlit watchdog llama-cpp-python && \
+  pip install -r "llama.cpp/requirements/requirements-convert-hf-to-gguf.txt" && \
+  cd llama.cpp && make -j "$(nproc)" && cd ..
+
+# Build an entrypoint.sh that activates the virtual environment
+RUN echo "#!/bin/bash" > /app/entrypoint.sh && \
+  echo 'export PYENV_ROOT="$HOME/.pyenv"' >> /app/entrypoint.sh && \
+  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> /app/entrypoint.sh && \
+  echo 'eval "$(pyenv init -)"' >> /app/entrypoint.sh && \
+  echo ". .venv/bin/activate" >> /app/entrypoint.sh && \
+  echo "cd /app" >> /app/entrypoint.sh && \
+  echo "exec \"\$@\"" >> /app/entrypoint.sh && \
+  chmod +x /app/entrypoint.sh
+
+VOLUME [ "/app/models" ]
+EXPOSE 8501
+
+CMD [ "/app/entrypoint.sh", "streamlit", "run", "main.py", "--browser.serverAddress", "0.0.0.0" ]
