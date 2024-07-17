@@ -33,5 +33,16 @@ cd ..
 
 if [ "$DOCKER_BUILD" != true ]; then
   echo "Starting Streamlit..."
-  streamlit run main.py --browser.serverAddress 0.0.0.0
+  # Check if running in Google Colab
+  if [ -d "/content" ] || [ -n "${COLAB_RELEASE_TAG+x}" ]; then
+    echo "Running in Google Colab. Fetching public IP..."
+    PUBLIC_IP=$(wget -q -O - ipv4.icanhazip.com)
+    echo "Public IP: $PUBLIC_IP"
+    
+    # Start Streamlit and localtunnel
+    streamlit run main.py & npx localtunnel --port 8501
+  else
+    # Not running in Colab, start Streamlit normally
+    streamlit run main.py --browser.serverAddress 0.0.0.0
+  fi
 fi
