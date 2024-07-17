@@ -19,7 +19,7 @@ else
 fi
 
 pip install --upgrade huggingface_hub pip streamlit watchdog
-pip install -r "llama.cpp/requirements/requirements-convert-hf-to-gguf.txt"
+pip install -r "llama.cpp/requirements/requirements-convert_hf_to_gguf.txt"
 cd llama.cpp
 
 # if CUDA is available, set the llama.cpp build options
