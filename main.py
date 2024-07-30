@@ -22,7 +22,7 @@ uploaded_file = None
 
 DEFAULT_CONCURRENCY = int(os.getenv("DEFAULT_CONCURRENCY", 2))
 
-script_path = "llama.cpp/convert-hf-to-gguf.py"
+script_path = "llama.cpp/convert_hf_to_gguf.py"
 # Define the enum
 ggml_type_enum = {
     "Q4_0": 2,
