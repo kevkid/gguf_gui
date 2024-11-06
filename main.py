@@ -92,6 +92,8 @@ def streamlit_main():
         try:
             with st.spinner(f"Converting Safetensors to {outtype}"):
                 # Define the arguments you want to pass
+                safetensor_dl_loc = str(root_output_path.joinpath(manual_entry.name))
+                st.warning(f"Using input directory/repo id: {safetensor_dl_loc}")
                 try:
                     safetensor_dl_loc = snapshot_download(repo_id=str(manual_entry), local_files_only=False, local_dir=str(root_output_path.joinpath(manual_entry.name)))
                     st.success(f"Model downloaded to {safetensor_dl_loc}")
