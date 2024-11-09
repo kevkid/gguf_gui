@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+sudo apt update
+sudo apt install gcc-11 g++-11 build-essential -y
+
+
 # Repository name
 REPO_NAME="llama.cpp"
 DOCKER_BUILD=${DOCKER_BUILD:-false} # set to true if running during a docker build
@@ -20,6 +24,10 @@ fi
 
 pip install --upgrade huggingface_hub pip streamlit watchdog
 pip install -r "llama.cpp/requirements/requirements-convert_hf_to_gguf.txt"
+
+# There are other arguments you can add to llama-cpp-python as shown here:
+# https://github.com/abetlen/llama-cpp-python
+CXX=g++-11  CC=gcc-11 pip install llama-cpp-python
 cd llama.cpp
 
 # if CUDA is available, set the llama.cpp build options

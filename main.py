@@ -175,7 +175,7 @@ def streamlit_main():
             with st.spinner(f"Converting Safetensors to {ggml_selected_type}"):
                 if imatrix:
                     # Construct the command
-                    cmd = ["./llama.cpp/imatrix"]
+                    cmd = ["./llama.cpp/llama-imatrix"]
                     if outfile_ggml:
                         cmd.extend(["-m", outfile_ggml])
                     if training_data:
@@ -196,7 +196,7 @@ def streamlit_main():
                     # st.text_area("Command Errors", result.stderr)
 
                 # Construct the command
-                cmd = ["./llama.cpp/quantize"]
+                cmd = ["./llama.cpp/llama-quantize"]
                 if imatrix:
                     cmd.extend(["--imatrix", imatrix_output_file or imatrix_file])
                 if allow_requantize:
